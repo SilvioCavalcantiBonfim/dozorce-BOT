@@ -1,3 +1,10 @@
 require('dotenv').config()
+const {Client, GatewayIntentBits} = require('discord.js');
 
-console.log(process.env)
+const bot = new Client({intents: [GatewayIntentBits.Guilds]})
+
+bot.once('ready', c => {
+    bot.user.setStatus('available')
+})
+
+bot.login(process.env.DISCORD_TOKEN_BOT);

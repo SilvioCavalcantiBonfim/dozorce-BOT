@@ -1,10 +1,10 @@
 {
   "name": "dozorce",
   "version": "0.1.0",
-  "description": "",
+  "description": "Bot to register active users.",
   "main": "src/index.js",
   "scripts": {
-    "start": "node ./src/index.js"
+    "start": "clear && node ./init/index.js && node ./src/index.js"
   },
   "author": {
     "name": "Silvio Cavalcanti Bonfim",
@@ -25,7 +25,8 @@
   "dependencies": {
     "discord.js": "^14.5.0",
     "dotenv": "^16.0.3",
-    "firebase": "^9.11.0"
+    "firebase": "^9.11.0",
+    "pkginfo": "^0.4.1"
   },
   "engines": {
     "node": ">= 17.0.0",

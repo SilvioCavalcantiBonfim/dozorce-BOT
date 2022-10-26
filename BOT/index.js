@@ -1,10 +1,18 @@
 const Firebase = require("firebase/compat/app");
-const tool = require('./toolkit');
 require('firebase/compat/database');
 const { Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config()
 
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates] })
+
+
+const default_register = {
+    active: -1,
+    avatar: '',
+    name: '',
+    bot: false,
+    register: {'0': 0}
+}
 
 const firebaseConfig = {
     apiKey: process.env.FIREBASE_APIKEY,
@@ -14,7 +22,9 @@ const firebaseConfig = {
     messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
     appId: process.env.FIREBASE_APPID
 };
+
 Firebase.initializeApp(firebaseConfig);
+
 const db = Firebase.database();
 
 bot.once('ready', () => {
@@ -42,20 +52,12 @@ bot.on('guildDelete', guild => {
     bot.user.setPresence({ activities: [{ name: bot.guilds.cache.size + ((bot.guilds.cache.size > 1) ? ' Servidores' : ' Servidor'), type: 3 }] });
 });
 
-const default_register = {
-    active: -1,
-    avatar: '',
-    name: '',
-    bot: false,
-    register: {'0': 0}
-}
-
 bot.on('voiceStateUpdate', async (before, after) => {
     var allmember = (await before.guild.members.fetch()).map(m => { return m.user.id });
     let stateChannels = Number(before.channelId !== null) + 2 * Number(after.channelId !== null);
     if (stateChannels === 2 || stateChannels === 1) {
         db.ref('/' + [before, after][stateChannels - 1].guild.id).once('value', s => {
-            const DB_SERVER = s.val();
+            const DB_SERVER = (s.val() === null)? {} : s.val();
             let NEW_DB_SERVER = DB_SERVER;
             //2 - join
             //1 - separate
@@ -72,7 +74,6 @@ bot.on('voiceStateUpdate', async (before, after) => {
                 db.ref('/' + after.guild.id).set(NEW_DB_SERVER);
             } else {
                 allmember.filter(id => { return before.channel.members.map(m => m.user.id).indexOf(id) === -1 }).map(id => {
-                    // console.log("\033[1;37mAccessing:\033[0m " + before.guild.id + "/" + id);
                     db.ref(before.guild.id + "/" + id).once('value', read => {
                         if (read.val() === null) {
                             if (!DB_SERVER.hasOwnProperty(id)) {
@@ -91,7 +92,6 @@ bot.on('voiceStateUpdate', async (before, after) => {
                                 NEW_DB_SERVER[id].register[date_refenrence.getTime().toString()] = (Date.now() - DB_SERVER[id].active);
                             NEW_DB_SERVER[id].active = -1;
                         }
-                        console.dir(NEW_DB_SERVER[id]);
                         db.ref('/' + after.guild.id+"/"+id).set(NEW_DB_SERVER[id]);
                     });
                 });

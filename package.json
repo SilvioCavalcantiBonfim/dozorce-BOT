@@ -2,9 +2,9 @@
   "name": "dozorce",
   "version": "0.1.0",
   "description": "Bot to register active users.",
-  "main": "src/index.js",
+  "main": "./BOT/index.js",
   "scripts": {
-    "start": "clear && node ./init/index.js && node ./src/index.js"
+    "start": "clear && node ./init/index.js && nodemon ./API/main.js && node ./BOT/index.js"
   },
   "author": {
     "name": "Silvio Cavalcanti Bonfim",
@@ -23,8 +23,10 @@
   "homepage": "https://github.com/SilvioCavalcantiBonfim/dozorce#readme",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "discord.js": "^14.5.0",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "firebase": "^9.11.0",
     "pkginfo": "^0.4.1"
   },
